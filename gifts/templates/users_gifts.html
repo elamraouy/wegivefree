@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% block title %} {{ user.first_name }} {{ user.last_name }}'s gifts {% endblock %}
+{% block active_user %} active {% endblock %}
+{% load static %}
+{% block scripts %}
+<script src="{%  static  'js/user.app.js'  %}" crossorigin="anonymous"></script>
+{% endblock %}
+{% block content %}
+
+<div class="container" style="margin-top:100px">
+    <div id="main">
+        <h3 class="p-2">
+            {{ user.first_name }} {{ user.last_name }} 's gifts
+            {% if user_gifts %} / {{ user_gifts|length }} {% endif %}
+        </h3>
+        <div class="row pt-2">
+            <div class="col-md-12">
+                <div class="card bg-info text-white p-1 mb-2 mt-2 rounded shadow">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="{{user.socialaccount_set.all.0.get_avatar_url}}"
+                                 class="rounded w-100 rounded-square">
+                        </div>
+                        <div class="col-md-9">
+                            <h4 class="my-4">{{ user.first_name }} {{ user.last_name }}</h4>
+                            <!--                            <h5 class="my-4">{{ user.email }}</h5>-->
+                            <div class="table-responsive-sm">
+                                <table class="table table-striped w-100 table-light">
+                                    <thead>
+                                    <tr class="text-center">
+                                        <th scope="col">Offres</th>
+                                        <th scope="col">Demandes</th>
+                                        <th scope="col">Waiting</th>
+                                        <th scope="col">Acceptés</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="text-center">
+                                        <td>{% if user_gifts %} {{ user_gifts|length }} {% else %} 0 {% endif %}</td>
+                                        <td>{% if user_requests %} {{ user_requests|length }} {% else %} 0 {% endif %}
+                                        </td>
+                                        <td>{% if stats %} {{ stats.w }}{% else %} 0 {% endif %}</td>
+                                        <td>{% if stats %} {{ stats.a }}{% else %} 0 {% endif %}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="mt-2 rounded-top">
+                    <ul class="nav nav-tabs nav-justified ">
+                        <li class="nav-item  blue lighten-4 rounded-top">
+                            <a class="nav-link {% if goto == 'gifts' %}active{% endif %}"
+                               href="#offresContent" data-toggle="tab"> <i class="fas fa-folder"></i> Mes offres</a>
+                        </li>
+                        <li class="nav-item mx-3 blue lighten-4  rounded-top">
+                            <a class="nav-link {% if goto == 'request' %}active{% endif %}"
+                               href="#requestsContent" data-toggle="tab"><i class="fas fa-file"></i> Mes demandes</a>
+                        </li>
+                        <li class="nav-item blue lighten-4 rounded-top">
+                            <a class="nav-link {% if goto == 'inbox' %}active{% endif %}"
+                               href="#messagesContent" data-toggle="tab"><i class="fas fa-envelope"></i> Mes
+                                messages</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="tabs">
+                        <div class="tab-pane {% if goto == 'gifts' %}fade show active{% endif %}" id="offresContent">
+                            {% if user_gifts %}
+                            <div class="bg-light shadow rounded-bottom h-100 pt-4">
+                                {% for gift in user_gifts %}
+                                <div id="cardHolder{{gift.id}}" class="col-lg-12 col-md-12 col-sm-12 mb-3 card-holder">
+                                    <div class="card h-100 bg-light p-2 text-black shadow">
+                                        <div class="row">
+                                            <div class="col-lg-4 p-3">
+                                                <div style="max-height:250px; overflow:hidden">
+                                                    <a href="/show/?id={{ gift.id }}">
+                                                        {% if gift.image == '' %}
+                                                        <img src="{% static 'pics/hand.jpg' %}"
+                                                             class="card-img-top image-fluid"
+                                                             alt="{{ gift.title }}">
+
+                                                        {% else %}
+                                                        <img src="/media/{{ gift.image }}"
+                                                             class="card-img-top image-fluid"
+                                                             alt="{{ gift.title }}">
+
+                                                        {% endif %}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-8 p-3">
+                                                 <div class="inline-block float-right">
+                                                    <button type="button" class="close adminDel text-danger "
+                                                            data-id="{{ gift.id }}">
+                                                        <i class="fas fa-trash"> </i>
+                                                    </button>
+                                                     <button type="button" class="close hideItem  mx-2 text-primary "
+                                                            data-id="{{ gift.id }}">
+                                                       <i class="fab fa-twitter"></i>
+                                                    </button>
+                                                    <button type="button" class="close hideItem  mx-2 text-primary "
+                                                            data-id="{{ gift.id }}">
+                                                       <i class="fab fa-facebook"></i>
+                                                    </button>
+                                                </div>
+                                                <h5 class="card-title">{{ gift.title }}</h5>
+                                                <div style="display: flex; justify-content: left;">
+                                                    <div>
+                                                        <a href="?filter=byDomaine&domaine={{ gift.domaine }}"
+                                                           class="badge my-2 badge-secondary" style="float:left">
+                                                            {{ gift.domaine }}</a>
+                                                    </div>
+                                                </div>
+                                                <p dir="auto" style="text-align: -webkit-auto;" class="card-text">
+                                                    {{ gift.body|truncatechars:100 }}</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button data-id="{{gift.id}}"
+                                                    class="btn btn-primary mx-2 my-2 mt-auto show_requests">
+                                                <i class="fas fa-file"></i> Voir les demandes
+                                            </button>
+                                            <!--<button data-id="{{gift.id}}"
+                                                    class="btn btn-success mx-2 my-2 mt-auto show_message">
+                                                <i class="fas fa-envelope"></i> Voir les messages
+                                            </button>-->
+                                        </div>
+                                        <div class="requestsContainer">
+                                            <div id="requestHolder{{gift.id}}" class="col p-4 bg-dark text-white"
+                                                 style="display:none">
+                                                <div id="requestLoader{{gift.id}}"
+                                                     class="col-md-12 p-4 rounded shadow d-flex justify-content-center">
+                                                    <div>
+                                                        <div class="spinner-grow" style="width: 3rem; height: 3rem;"
+                                                             role="status">
+                                                            <span class="sr-only">Loading...</span>
+                                                        </div>
+                                                        <strong> Patientez un moment SVP </strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="card h-100 p-4 justify-content-left">
+                                <h4 class="alert alert-warning text-center shadow rounded">
+                                    Vous n'avez pas des offre actifs pour le moment</h4> <br>
+                                <div class="text-center">
+                                    <a href="/add"
+                                       class="btn btn-success btn-lg todoBtn">
+                                        <i class="fas fa-gift"></i> Moi aussi j'aimerais offrir
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane {% if goto == 'request' %}fade show active{% endif %}"
+                             id="requestsContent">
+                            <div class="bg-light shadow rounded-bottom h-100 pt-4">
+                                {% if user_requests %}
+                                {% for req in user_requests %}
+                                <div id="req{{req.id}}" class="p-4 my-2 bg-dark text-white border-bottom border-success border-5 rounded shadow">
+                                    <h4> Demandes sur: {{req.gift__title}}</h4>
+                                    <h6>Posté par:
+                                        {% if req.gift__user_image %}
+                                        <img src="{{req.gift__user_image}}" class="rounded mx-2 rounded-circle"
+                                             width="30">
+                                        {% endif %}
+                                        {{req.gift__user_name}} </h6>
+                                    {% if req.stats == "waiting" %}
+                                    <button class="btn btn-warning">Status : {{req.stats}}</button>
+                                    {% elif req.stats == "accepted" %}
+                                    <button disabled class="btn btn-success"><i class="fas fa-check"></i> Status : {{req.stats}}</button>
+                                    <button class="btn btn-warning mx-1 show_converstation_messages"
+                                            data-id="{{req.conversation}}"
+                                            data-members="{{req.gift__user_name}}
+                                            <img src='{{req.gift__user_image}}' width='40'
+                                            class='rounded border-white rounded-circle'>
+                                            <img src='{{req.user__profile__user_image}}' width='40'
+                                            class='rounded border-white rounded-circle'>
+                                            and {{req.user__first_name}} {{req.user__last_name}}">
+                                       <i class="fas fa-comments"></i> Ouvrir la conversation
+                                    </button>
+                                    {% else %}
+                                    <h5 class="btn btn-danger">Status : {{req.stats}}</h5>
+                                    {% endif %}
+                                    <img src="/media/{{ req.gift__image }}" class="rounded rounded-circle float-right"
+                                         height="100" width="100">
+                                    <div class="p-2">
+                                        <strong> <i class="fas fa-envelope"></i>
+                                            Votre message : le {{req.date_add |date:'d-m-Y à H:i'}}
+                                        </strong>
+                                        <p class="card-text p-3 rounded bg-light text-dark">
+                                            {{req.user_message | safe}}
+                                        </p>
+                                    </div>
+
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <h4 class="alert alert-warning text-center shadow rounded">
+                                    Pas de demandes pour l'instant </h4>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                        <div class="tab-pane {% if goto == 'inbox' %}fade show active{% endif %}" id="messagesContent">
+                            <div class="bg-light shadow rounded-bottom h-100 pt-4">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-4 blue lighten-2 rounded p-2">
+                                            <div id="accordion" role="tablist" aria-multiselectable="true">
+                                                <h5 class="card-header bg-dark" role="tab" id="headingOne">
+                                                    <a data-toggle="collapse" data-parent="#accordion"
+                                                       href="#collapseOne" aria-expanded="true"
+                                                       aria-controls="collapseOne" class="d-block">
+                                                        <i class="fa fa-chevron-down float-right"></i>
+                                                        Mes offres
+                                                    </a>
+                                                </h5>
+                                                <div id="collapseOne" class="collapse show" role="tabpanel"
+                                                     aria-labelledby="headingOne">
+                                                    <div class="card-body">
+                                                        {% if user_gifts %}
+                                                        <div class="list-group">
+                                                            {% for gift in user_gifts %}
+                                                            <a href="#"
+                                                               class="list-group-item show_message list-group-item-action my-1"
+                                                               data-id="{{gift.id}}">
+                                                                <div class="row p-4 mb-2 my-3">
+                                                                    <div class="col-md-3 col-sm-3 col-3">
+                                                                        {% if gift.image == '' %}
+                                                                        <img src="{% static 'pics/hand.jpg' %}"
+                                                                             class="image-fluid w-100"
+                                                                             alt="{{ gift.title }}">
+                                                                        {% else %}
+                                                                        <img src="/media/{{ gift.image }}"
+                                                                             class="image-fluid w-100"
+                                                                             alt="{{ gift.title }}">
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="col-md-9 col-sm-9 col-9">
+                                                                        <h6>{{ gift.title }}</h6>
+                                                                        <i class="fas fa-comment-dots fa-x2"></i>
+                                                                        Conversation
+                                                                    </div>
+
+                                                                </div>
+                                                            </a>
+                                                            {% endfor %}
+
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                                <h5 class="card-header bg-dark" role="tab" id="headingTwo">
+                                                    <a class="collapsed d-block" data-toggle="collapse"
+                                                       data-parent="#accordion" href="#collapseTwo"
+                                                       aria-expanded="false" aria-controls="collapseTwo">
+                                                        <i class="fa fa-chevron-down float-right"></i>
+                                                        Mes demandes
+                                                    </a>
+                                                </h5>
+                                                <div id="collapseTwo" class="collapse" role="tabpanel"
+                                                     aria-labelledby="headingTwo">
+                                                    <div class="card-body">
+                                                        {% if user_requests %}
+                                                        {% for req in user_requests %}
+                                                        <div class="card bg-light-blue my-2">
+                                                            <a href="#" class="show_message"
+                                                               data-id="{{req.gift__id}}">
+                                                                <div class="row p-1 my-3">
+                                                                    <div class="col-md-3 col-sm-3 col-3">
+                                                                        {% if req.gift__image == '' %}
+                                                                        <img src="{% static 'pics/hand.jpg' %}"
+                                                                             class="image-fluid w-100"
+                                                                             alt="{{ req.gift__title }}">
+                                                                        {% else %}
+                                                                        <img src="/media/{{ req.gift__image }}"
+                                                                             class="image-fluid w-100"
+                                                                             alt="{{ req.gift__title }}">
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="col-md-9 col-sm-9 col-9">
+                                                                        {{ req.gift__title }}
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8" id="messagesHolder">
+                                            <h4 class="alert alert-success text-center shadow rounded">
+                                                veuillez choisir un offre ou une demandes </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

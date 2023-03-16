@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block title %} Tous les offres {% endblock %}
+{% block active_gifts %} active {% endblock %}
+{% load static %}
+{% block scripts %}
+<script src="{%  static  'js/gifts.app.js'  %}" crossorigin="anonymous"></script>
+{% endblock %}
+{% block content %}
+<div class="container" style="margin-top:100px">
+    <!-- side bar content -->
+    <div id="mySidebar" class="sidebar bg-dark">
+        <a href="#" class="closebtn" id="closeNavBtn">&times;</a>
+        <a href="?domaine=Vêtements"><i class="fas fa-tshirt"></i> Vêtements</a>
+        <a href="?domaine=Aides budgétaires"><i class="fas fa-shopping-basket"></i> Aides budgétaires</a>
+        <a href="?domaine=Apprentissage des langues"><i class="fas fa-language"></i> Langues</a>
+        <a href="?domaine=Education et enseigement"><i class="fas fa-chalkboard-teacher"></i> Enseigement</a>
+        <a href="?domaine=Cours en photos"><i class="fas fa-graduation-cap"></i> Notes de cours</a>
+        <a href="?domaine=Services sociaux"><i class="fas fa-hands-helping"></i> Services sociaux</a>
+        <a href="?domaine=Services medicaux"><i class="fas fa-medkit"></i> Services medicaux</a>
+        <a href="{% url 'gifts_list_url' %}"><i class="fas fa-database"></i> Tous les domains</a>
+    </div>
+    <!-- content container -->
+    <div id="main">
+        <div class="my-5 pt-4">
+            <input type="text" value="{% if page.object_list %} {{ page.object_list|length }} {% endif %}"
+                   hidden="hidden" id="hidden_gift_count">
+            <!-- Dynamic page titles -->
+            <div class="d-flex flex-row justify-content-left">
+                <button class="openbtn btn btn-outline-dark text-dark d-inline" id="openNavbtn" style="border:none;">
+                    &#9776;
+                </button>
+                <h2 class="d-inline text-primary">
+                    {% if domaine %}
+                    Gifts in {{ domaine }}
+                    {% if page.object_list %} / {{ page.object_list|length }} {% else %} / 0 gifts. {% endif %}
+                    {% elif words %}
+                    Gifts for : {{ words }}
+                    {% if page.object_list %} / {{ page.object_list|length }} {% else %} / 0 gifts. {% endif %}
+                    {% else %}
+                    Tous les offres
+                    {% if page.object_list %} / {{ page.paginator.count }} {% else %} / 0 gifts. {% endif %}
+                    {% endif %}
+                </h2>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12 my-3">
+            <div class="card">
+                <ul id="region_list_1" class="seo-lp-list">
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Casablanca</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Agadir</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Al Hoceima</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Béni Mellal</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >El Jadida</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor">Errachidia</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Fès</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Kénitra</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Khénifra</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Khouribga</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Larache</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Marrakech</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Meknès</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Nador</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Ouarzazate</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Oujda</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Rabat</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Safi</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Settat</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Salé</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Tanger</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Taza</a>
+</li>
+<li class="seo-lp-item"><a class="seo-lp-anchor" >Tétouan</a>
+</li>
+
+</ul>
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <!-- content -->
+
+                    <div class="row my-2">
+                        {% for gift in page.object_list %}
+                        <div id="cardHolder{{gift.id}}"
+                             class="col-lg-4 col-md-6 col-sm-12 card-holder mb-4">
+                            <div class="card item h-100">
+                                <div class="card-body">
+                                    <div class="">
+                                        {% if gift.user_image == '' %}
+                                        <i class="fas fa-user-edit fa-2x"></i>
+                                        {% else %}
+                                        <img src="{{ gift.user_image}}" class="rounded mx-2 rounded-circle" width="30">
+                                        {% endif %}
+                                        <strong>{{gift.user_name}}</strong>
+                                        {% if user.is_superuser %}
+                                        <button type="button" class="close adminDel text-danger inline-block"
+                                                data-id="{{ gift.id }}">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        {% else %}
+                                        <div class="dropdown float-right inline-block">
+                                            <button class="dropdown-toggle close" type="button"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                &#x22EE;
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right"
+                                                 aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" href="#">Demander cet offre</a>
+                                                <a class="dropdown-item" href="#">Singaler</a>
+                                                <a class="dropdown-item" href="#">Chacher</a>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <h5 dir="auto" class="card-title">{{ gift.title }}</h5>
+                                    <div style="display: flex; justify-content: left;">
+                                        <div>
+                                            <a href="?filter=byDomaine&domaine={{ gift.domaine }}"
+                                               class="badge my-2 badge-warning" style="float:left">
+                                                {{ gift.domaine }}</a>
+                                        </div>
+                                    </div>
+                                    <div class="view overlay mt-auto" style="max-height:300px; overflow:hidden">
+                                        <a href="/show/?id={{ gift.id }}">
+                                            {% if gift.image == '' %}
+                                            <img src="{% static 'pics/hand.jpg' %}" class="card-img-top image-fluid"
+                                                 alt="{{ gift.title }}">
+
+                                            {% else %}
+                                            <img src="/media/{{ gift.image }}" class="card-img-top image-fluid"
+                                                 alt="{{ gift.title }}">
+
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <p dir="auto" style="text-align: -webkit-auto;" class="card-text mt-auto p-1">
+                                        {{ gift.body| safe | truncatechars:100 }}</p>
+                                    <!--                                    <a href="/show/?id={{ gift.id }}" class="btn btn-outline-success mt-auto">Consulter-->
+                                    <!--                                        l'offre</a>-->
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                <!-- paginator -->
+                <div id="gift-paginator" class="row justify-content-center">
+                    <nav aria-label="..." class="my-4">
+                        <ul class="pagination">
+                            <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
+                                <a class="page-link" href="{{ prev_page_url }}" tabindex="-1" aria-disabled="true">Précendente</a>
+                            </li>
+                            {% for n in page.paginator.page_range %}
+                            {% if not words == '' %}
+                            {% if page.number == n %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{ n }}&search={{ words }}">{{ n }}
+                                    <span class="sr-only">(current)</span></a>
+                            </li>
+                            {% elif n > page.number|add:'-3' and n < page.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ n }}&search={{ words }}">{{ n }}</a>
+                            </li>
+                            {% endif %}
+                            {% else %}
+                            {% if page.number == n %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{ n }}">{{ n }}
+                                    <span class="sr-only">(current)</span></a>
+                            </li>
+                            {% elif n > page.number|add:'-3' and n < page.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            <li class="page-item {% if not next_page_url %} disabled {% endif %}">
+                                <a class="page-link" href="{{ next_page_url }}">Suivante</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

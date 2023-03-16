@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %} home {% endblock %}
+{% block active_home %} active {% endblock %}
+{% load static %}
+{% block content %}
+<!-- Header -->
+<header class="jumbotron bg-image overlay p-4 mb-5">
+    <div class="container h-100 justify-content-center">
+        <div class="row  pt-1 h-100">
+            <div class="col-lg-12 pt-1 justify-content-center text-center">
+                <h1 class="display-4 text-dark siteTitle">
+                    <a>We give 4 free</a>
+                </h1>
+                {% if not user.is_authenticated %}
+                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-login">
+                    <i class="fas fa-users"> </i> Log-in to give free
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="col-md-12 col-sm-12">
+        <div class="text-center rounded-right p-1 mb-4 text-white" style="margin-top:-160px; z-index:10">
+            <h5 class="p-3 mb-4 text-dark text-center">Que voulez-vous faire ? </h5>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 col-xm-6 text-center mb-1">
+                    <a id="iGiveBtn" href="/add" data-class="bg-success" class="btn btn-success btn-block btn-lg todoBtn">
+                        <i class="fas fa-gift"></i> Je veux offrir
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6 text-center mb-1 d-none d-md-block">
+                    <a href="/gifts" data-class="bg-primary" class="btn btn-primary btn-block btn-lg todoBtn">
+                        <i class="fas fa-search"></i> Je cherche des offres
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6 col-xm-6 text-center mb-1">
+                    <a href="#" data-class="bg-danger" data-toggle="modal" data-target="#bloodQuery"
+                       class="btn btn-danger btn-block btn-lg todoBtn">
+                        <i class="fas fa-heart"></i> Transfusion sanguine
+                    </a>
+                </div>
+                <div class="col-md-12 text-center mt-4 p4">
+                    <form class="form-inline w-100" action="{% url 'gifts_list_url' %}">
+                        <input class="form-control w-100 mr-sm-3" type="search" name="search" placeholder="Search"
+                               aria-label="Search">
+                        <button class="btn btn-success btn-sm my-sm-0" type="submit"
+                                style="margin-left:-50px; margin-top:0px !important">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- News jumbotron -->
+        <div class="jumbotron text-center hoverable p-4">
+
+            <!-- Grid row -->
+            <div class="row">
+                <!-- Grid column -->
+                <!-- Grid column -->
+                <!-- Grid column -->
+                <div class="col-md-12 text-md-left ml-3 mt-3">
+                    <!-- Excerpt -->
+                    <a href="#!" class="green-text">
+                        <h6 class="h6 pb-1"><i class="fas fa-question-circle pr-1"></i>Qui sommes nous?</h6>
+                    </a>
+                    <h4 class="h4 mb-4">Le concept</h4>
+
+                    <p class="font-weight-normal">
+                        Ce site est dédié à ceux qui souhaitent partager, donner sans aucun retour. Ce site vous aide à
+                        bien classer vos dons selon des catégories et des sous-catégories prédéfinies
+                        Peut import ce que vous voulez offrir postez le puis attendez que le système vous propose des
+                        bénéficiaires potentiels classés par ordres de mérite.
+                        Nous nous basons sur plusieurs critères pour décider qui parmi les gens qui ont poster des
+                        demandes ont plus besoin de votre objet ou services.
+                    </p>
+
+                    <a class="btn btn-success">Contacter-nous</a>
+
+                </div>
+                <!-- Grid column -->
+
+            </div>
+            <!-- Grid row -->
+
+        </div>
+        <!-- News jumbotron -->
+    </div>
+    <div class="card bg-white p-3 mt-4 shadow rounded-top rounded-right">
+        <h4 class="p-3">Offres recemment publiées</h4>
+        <div id="lastPostedItem" class="d-flex flex-row bd-highlight mb-3 justify-content-center">
+            <div class="row">
+                {% for gift in last %}
+                <div class="col-md-4 col-sm-12">
+                    <!--Card-->
+                    <div class="card h-100">
+                        <!--Card image-->
+                        <div class="view overlay">
+                            <img src=" {% if gift.image == '' %}
+                                        {% static 'pics/hand.jpg' %}
+                                        {% else %}
+                                        {{ gift.image.url }}
+                                        {% endif %}" class="card-img-top" alt="{{ gift.title }}">
+                            <a href="?id={{ gift.id }}">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+
+                        <!--Card content-->
+                        <div class="card-body">
+                            <!--Title-->
+                            <h4 class="card-title">{{ gift.title }}</h4>
+                            <!--Text-->
+                            <p class="card-text">{{ gift.body| safe | truncatechars:100 }}</p>
+                            <a href="?id={{ gift.id }}" class="btn btn-indigo mt-auto">Consulter cet offre</a>
+                        </div>
+
+                    </div>
+                    <!--/.Card-->
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="text-center">
+            <a href="/gifts" class="btn btn-success">
+                Consulter tous les offres
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

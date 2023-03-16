@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% block title %} {{ gift.title }} {% endblock %}
+{% load static %}
+{% block content %}
+<!-- Begin page content -->
+<main role="main" class="container" style="margin-top:100px">
+    <div class="rounded bg-light rounded-top p-4 my-2">
+        <div class="inline-block float-right">
+            <button type="button" class="close text-danger "
+                    data-id="{{ gift.id }}">
+                <i class="fab fa-instagram"></i>
+            </button>
+            <button type="button" class="close hideItem  mx-2 text-primary "
+                    data-id="{{ gift.id }}">
+                <i class="fab fa-twitter"></i>
+            </button>
+            <button type="button" class="close hideItem  mx-2 text-primary "
+                    data-id="{{ gift.id }}">
+                <i class="fab fa-facebook"></i>
+            </button>
+        </div>
+        <h1>{{ gift.title }}</h1>
+        <h4>
+            <strong>
+                {% if gift.user_image == '' %}
+                <i class="fas fa-user-edit fa-2x"></i>
+                {% else %}
+                <img src="{{ gift.user_image }}" class="rounded mx-2 rounded-circle" width="50">
+                {% endif %}
+                {{ gift.user_name }}
+            </strong>
+        </h4>
+        <div class="p-4">
+            {% if gift.is_given == 'no' %}
+            <h5 class="text-success card-title d-inline pt-2"><i class="fas fa-check"></i> Disponible </h5>
+            {% else %}
+            <h5 class="text-danger card-title d-inline pt-2"><i class="fas fa-check"></i> Terminé </h5>
+            {% endif %}
+            <h5 class="text-success card-title d-inline pt-2"> à {{gift.city}} </h5>
+            {% if extra.requested %}
+            <button class="mt-auto btn btn-success text-center float-right" disabled>
+                <i class="fas fa-check"></i> Vous avez déja demandé cet offre
+            </button>
+            {% elif extra.owner %}
+            <button class="mt-auto btn btn-success text-center float-right" disabled>
+                <i class="fas fa-check"></i> Votre offre
+            </button>
+            {% else %}
+            <a href="#" data-id="{{gift.id}}" class="mt-auto btn btn-success interstedBtn float-right">
+                J'aimerais avoir cet objet
+            </a>
+            {% endif %}
+
+        </div>
+
+    </div>
+    <!-- Card Start -->
+    <div class="card p-4" style="width:100%">
+        <div class="row ">
+            <div class="col-md-12">
+                <div class="p-3">
+                    <p class="card-text">
+                        <a href="#" class="badge badge-danger">{{gift.domaine}}</a>
+                    </p>
+                    <p dir="auto" id="dataDescription" class="card-text" style="text-align: -webkit-auto;">
+                        {{gift.body| safe}}
+                    </p>
+                    <div class="d-flex col bd-highlight">
+                        <div class="p-2 flex-fill bd-highlight">
+                            {% if gift.image == '' %}
+                            <img src="{% static 'pics/hand.jpg' %}" class="card-img-top image-fluid"
+                                 alt="{{ gift.title }}">
+
+                            {% else %}
+                            <img src="{{ gift.image.url }}" class="card-img-top image-fluid"
+                                 alt="{{ gift.title }}">
+
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="bg-light p-2 my-2 rounded shadow">
+                        {% if extra.requested %}
+                        <button class="mt-auto btn btn-success text-center" disabled>
+                            <i class="fas fa-check"></i> Vous avez déja demandé cet offre
+                        </button>
+                        <a href="/add" class="mt-auto btn btn-primary">Moi aussi je veux donner</a>
+                        {% elif extra.owner %}
+                        <button class="mt-auto btn btn-success text-center" disabled>
+                            <i class="fas fa-user"></i> c'est le votre
+                        </button>
+                        <a href="/add" class="mt-auto btn btn-primary">J'aimerais donner un autre</a>
+                        {% else %}
+                        <a href="#" data-id="{{gift.id}}" class="mt-auto btn btn-success interstedBtn">
+                            J'aimerais avoir cet objet
+                        </a>
+                        <a href="/add" class="mt-auto btn btn-primary">Moi aussi je veux donner</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- End of carousel -->
+            <div class="col-md-12 d-flex justify-content-center">
+                <div id="card-loader" style="display: none;">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+
+                    </div>
+                    <strong> Patientez un moment SVP </strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of card -->
+    <div class="col-md-12 mt-3">
+        <h4 class="p-3">Autres offres a {{gift.city}} :</h4>
+        <div class="d-flex justify-content-left mb-4">
+            <div class="row m-3">
+                {% for gift in same_city %}
+                <div class="col-md-4 col-sm-12">
+                    <!--Card-->
+                    <div class="card">
+                        <!--Card image-->
+                        <div class="view overlay">
+                            <img src=" {% if gift.image == '' %}
+                                        {% static 'pics/hand.jpg' %}
+                                        {% else %}
+                                        {{ gift.image.url }}
+                                        {% endif %}"
+                                 class="card-img-top"
+                                 alt="{{ gift.title }}">
+                            <a href="?id={{ gift.id }}">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+
+                        <!--Card content-->
+                        <div class="card-body">
+                            <!--Title-->
+                            <h4 class="card-title">{{ gift.title }}</h4>
+                            <!--Text-->
+                            <p class="card-text">{{ gift.body| safe | truncatechars:100 }}</p>
+                            <a href="?id={{ gift.id }}" class="btn btn-indigo">Consulter cet offre</a>
+                        </div>
+
+                    </div>
+                    <!--/.Card-->
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 mt-3">
+        <h4 class="p-3">En rapport avec {{gift.title}} :</h4>
+        <div class="d-flex justify-content-left mb-4">
+            <div class="row m-3">
+                {% for gift in related %}
+                <div class="col-md-4 col-sm-12">
+<!--Card-->
+                    <div class="card">
+                        <!--Card image-->
+                        <div class="view overlay">
+                            <img src=" {% if gift.image == '' %}
+                                        {% static 'pics/hand.jpg' %}
+                                        {% else %}
+                                        {{ gift.image.url }}
+                                        {% endif %}"
+                                 class="card-img-top"
+                                 alt="{{ gift.title }}">
+                            <a href="?id={{ gift.id }}">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+
+                        <!--Card content-->
+                        <div class="card-body">
+                            <!--Title-->
+                            <h4 class="card-title">{{ gift.title }}</h4>
+                            <!--Text-->
+                            <p class="card-text">{{ gift.body| safe | truncatechars:100  }}</p>
+                            <a href="?id={{ gift.id }}" class="btn btn-indigo">Consulter cet offre</a>
+                        </div>
+
+                    </div>
+                    <!--/.Card-->                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 mt-3">
+        <h4 class="p-3">Offre sous {{gift.domaine}} :</h4>
+        <div class="d-flex justify-content-left mb-4">
+            <div class="row m-3">
+                {% for gift in same_domaine %}
+                <div class="col-md-4 col-sm-12">
+                    <!--Card-->
+                    <div class="card">
+                        <!--Card image-->
+                        <div class="view overlay">
+                            <img src=" {% if gift.image == '' %}
+                                        {% static 'pics/hand.jpg' %}
+                                        {% else %}
+                                        {{ gift.image.url }}
+                                        {% endif %}"
+                                 class="card-img-top"
+                                 alt="{{ gift.title }}">
+                            <a href="?id={{ gift.id }}">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+
+                        <!--Card content-->
+                        <div class="card-body">
+                            <!--Title-->
+                            <h4 class="card-title">{{ gift.title }}</h4>
+                            <!--Text-->
+                            <p class="card-text">{{ gift.body| safe | truncatechars:100 }}</p>
+                            <a href="?id={{ gift.id }}" class="btn btn-indigo">Consulter cet offre</a>
+                        </div>
+
+                    </div>
+                    <!--/.Card-->
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <a href="/gifts" class="btn btn-success btn-lg">
+            Consulter tous les offres
+        </a>
+    </div>
+</main>
+
+<!-- demander un offre modal-->
+<div id="modalIterested" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Demander cet offre</h4>
+                <button id="closemodal" type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container" id="demandeBody">
+                    <form id="newDemandeForm" action="?" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" id="{{gift.id}}"/>
+                        <div class="form-group">
+                            <label for="id_user_name">Nom:</label>
+                            <input class="form-control" id="id_user_name" required name="user_name"
+                                   value="{{user.first_name}} {{user.last_name}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_user_city">Ville:</label>
+                            <select id="id_user_city" name="user_city" class="form-control" style="width: 100%;">
+                                <option value="All">Tous le maroc</option>
+                                <option value="Casablanca"> Casablanca</option>
+                                <option value="Agadir"> Agadir</option>
+                                <option value="Al Hoceima"> Al Hoceima</option>
+                                <option value="Béni Mellal"> Béni Mellal</option>
+                                <option value="El Jadida"> El Jadida</option>
+                                <option value="Errachidia"> Errachidia</option>
+                                <option value="Fès"> Fès</option>
+                                <option value="Kénitra"> Kénitra</option>
+                                <option value="Khénifra"> Khénifra</option>
+                                <option value="Khouribga"> Khouribga</option>
+                                <option value="Larache"> Larache</option>
+                                <option value="Marrakech"> Marrakech</option>
+                                <option value="Meknès"> Meknès</option>
+                                <option value="Nador"> Nador</option>
+                                <option value="Ouarzazate"> Ouarzazate</option>
+                                <option value="Oujda"> Oujda</option>
+                                <option value="Rabat"> Rabat</option>
+                                <option value="Safi"> Safi</option>
+                                <option value="Settat"> Settat</option>
+                                <option value="Salé"> Salé</option>
+                                <option value="Tanger"> Tanger</option>
+                                <option value="Taza"> Taza</option>
+                                <option value="Tétouan"> Tétouan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_user_message">Message:</label>
+                            <textarea id="id_user_message" name="user_message" required class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_user_email">Email:</label>
+                            <input type="text" name="user_email" id="id_user_email" required value="{{user.email}}"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_user_phone">Telephone: </label>
+                            <input type="text" name="user_phone" value="+212" id="id_user_phone" required
+                                   class="form-control">
+                        </div>
+                        <input type="hidden" name="gift" id="id_gift" value="{{gift.id}}">
+                        <input type="hidden" name="owner" id="id_owner" value="{{gift.user_id}}">
+                        <button id="sendNewDemande" class="btn btn-success btn-block">Envoyer votre demande
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="modalMask" class="col-md-12 bg-dark text-white p-4 rounded shadow d-none justify-content-center"
+             style="position:absolute; opacity:0.5; top:40%;">
+            <div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
+                </div>
+                <strong> Patientez un moment SVP </strong>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

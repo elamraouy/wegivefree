@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <title>GiveFree: {% block title %} {% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link href="{%  static  'css/bootstrap.css'  %}" rel="stylesheet">
+    <link href="{%  static  'css/jquery-confirm.min.css'  %}" rel="stylesheet">
+    <link href="{%  static  'css/app_bsextend.css'  %}" rel="stylesheet">
+    <link href="{%  static  'css/main.css'  %}" rel="stylesheet">
+    <link href="{%  static  'css/sb.css'  %}" rel="stylesheet">
+
+</head>
+
+<body>
+{% load socialaccount %}
+{% providers_media_js %}
+{% load notifications_tags %}
+
+<div class="container-fluid" id="main-container">
+    <!-- Navbar area-->
+    <section id="main-menu" class="">
+        <div class="col-md-12">
+            <nav class="navbar navbar-expand-lg fixed-top navbar-light shadow bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <img src="{% static 'pics/logo.png' %}" class="image-fluid" width="50"/>
+                </a>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="navbar-nav ml-md-auto">
+                        <li class="nav-item {% block active_home %}{% endblock %}">
+                            <a class="nav-link" href="/"> <i class="fas fa-home"></i> Home <span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item {% block active_add %}{% endblock %}">
+
+                            <input id="user_avatar" type="hidden"
+                                   value="{{user.socialaccount_set.all.0.get_avatar_url}}">
+                            <a class="nav-link" href="/gifts/add">
+                                <i class="fas fa-plus-circle"></i> Ajouter un offre<span
+                                    class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item {% block active_gifts %}{% endblock %}">
+                            <a class="nav-link" href="/gifts"> <i class="fas fa-gift"></i> Gifts <span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item dropdown {% block active_user %}{% endblock %}">
+                            <a class="dropdown-toggle nav-link" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="{{user.socialaccount_set.all.0.get_avatar_url}}"
+                                     class="rounded mx-2 rounded-circle" width="30">
+                                {{ user.first_name }} {{ user.last_name }}
+
+                            </a>
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                 aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{% url 'users' %}?sec=gifts"> <i
+                                        class="fas fa-gifts"></i>
+                                    Mes offres</a>
+                                <a class="dropdown-item" href="{% url 'users' %}?sec=request"> <i
+                                        class="fas fa-file"></i>
+                                    Mes Demandes</a>
+                                <a class="dropdown-item" href="{% url 'users' %}?sec=inbox"> <i
+                                        class="fas fa-envelope"></i>
+                                    Messages</a>
+                                <div class="dropdown-divider">
+                                </div>
+                                <a class="dropdown-item" href="{% url 'account_logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Log out
+                                </a>
+                            </div>
+                        </li>
+
+                        {% else %}
+                        <li class="nav-item d-inline">
+                            <div class="d-none loader justify-content-center">
+                                <div class="spinner-border text-warning" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            <a class="nav-link" data-toggle="modal" data-target="#modal-login">
+                                <i class="fas fa-user"></i> Login </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <!-- Nav Item - Alerts -->
+                <ul class="ml-md-auto">
+                    <li class="nav-item dropdown  no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle notify-count" href="#" id="alertsDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" data-display="static" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                {% live_notify_badge badge_class="badge badge-danger badge-counter"%}
+                                <!-- Counter - Alerts -->
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                 aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header">
+                                    Notifications
+                                </h6>
+                                <div id="notify_holder">
+
+                                </div>
+                            </div>
+                        </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</div>
+<!-- Content area -->
+
+{% block content %}
+{% endblock %}
+{% block accountcontent %}
+{% endblock %}
+<!-- LOGIN MODAL -->
+<div class="modal fade" id="modal-login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
+                <div id="">
+                    <div class="d-none loader my-2 justify-content-center">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <a class="nav-link btn btn-sm btn-primary login"
+                       href='{% provider_login_url "facebook" method="js_sdk" %}'>
+                        <i class="fab fa-facebook"></i> Facebook</a>
+                    <div class="divider p-2"></div>
+                    <a class="nav-link btn btn-sm btn-danger login" href='{% provider_login_url "google" %}'>
+                        <i class="fab fa-google"></i> Google</a>
+                </div>
+                <div class="md-form mb-5">
+                    <i class="fas fa-envelope prefix grey-text"></i>
+                    <input type="email" id="defaultForm-email" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="defaultForm-email">Your email</label>
+                </div>
+
+                <div class="md-form mb-4">
+                    <i class="fas fa-lock prefix grey-text"></i>
+                    <input type="password" id="defaultForm-pass" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="defaultForm-pass">Your password</label>
+                </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-default">Login</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modal-login2" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login section</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 class="center">Log in to give for free</h4>
+                <div class="divider"></div>
+                <div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--   Icons Section   -->
+<section style="margin-top: 20px;">
+    <div id="icons-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="p-4" id="concept">
+                        <h2 class="text-center text-danger">
+                            <i class="fas fa-heart fa-2x"></i>
+                        </h2>
+                        <h4 class="text-center">Le concept</h4>
+                        <p class="p-2">
+                            Ce site est dédié à ceux qui souhaitent partager, donner sans aucun retour.
+                            Ce site vous aide à bien classer vos dons selon des catégories et des sous-catégories
+                            prédéfinies<br>
+                            Peut import ce que vous voulez offrir postez le puis attendez que le système vous
+                            propose
+                            des bénéficiaires potentiels classés par ordres de mérite.<br>
+                            Nous nous basons sur plusieurs critères pour décider qui parmi les gens qui ont poster
+                            des
+                            demandes
+                            ont plus besoin de votre objet ou services.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <div class="p-4" id="rules">
+                        <h2 class="text-center text-primary ">
+                            <i class="fas fa-users fa-2x"></i>
+                        </h2>
+                        <h4 class="text-center">La démarche</h4>
+                        <p class="p-2"> - Un donateur poste un objet ou une services gratuitement <br>
+                            - Un bénéficiaire poste une demande d'acquisition <br>
+                            - Nous classons automatiquement les bénéficiaires selon les critères définies dans le
+                            post
+                            donateur<br>
+                            - Nous contactons le donateurs avec la liste suggérée <br>
+                            - le donateur décide finalement le bénéficiaire /les bénéficiaires de son objet/services
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <div class="p-4" id="user-data">
+                        <h2 class="text-center text-success">
+                            <i class="fas fa-file fa-2x"></i>
+                        </h2>
+                        <h4 class="text-center">Confidentialité</h4>
+                        <p class="p-2">
+                            Le donateur et bénéficiaire ont le choix de rester ou non anonymes durant le traitement
+                            et
+                            l'acquisition de
+                            l'objet<br>
+                            Nous ne partageons jamais vos informations personnelles<br>
+                            Aprés l'acquisition finale d'un objet. ce dernier est supprimé de la liste<br>
+                            Les commentaires n'ont aucun effet sur le choix faites par notre système.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Footer area -->
+<section style="margin-top:20px; margin-bottom: 0px !important;">
+    <footer class="bg-dark rounded rounded-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-sm-6 p-4">
+                    <h5 class="text-warning">Igive4free</h5>
+                    <p class="p-3 text-white"><i>Freely transfer the possession of (something) to (someone).</i>
+                    </p>
+                </div>
+                <div class="col-md-4 col-sm-6 p-4">
+                    <h5 class="text-warning">About Igive4free</h5>
+                    <ul>
+                        <li><a class="footer-link" href="#!">The concept</a></li>
+                        <li><a class="footer-link" href="#!">Rules</a></li>
+                        <li><a class="footer-link" href="#!">User Dta</a></li>
+                        <li><a class="footer-link" href="#!">Confidentialité</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="text-dark text-center bg-warning p-3 rounded-top mb-2">
+                        © 2020 No Rights <i class="fas fa-smile"></i>
+                        Thank you!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</section>
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{%  static  'js/jquery-3.5.1.js'  %}" type="text/javascript" crossorigin="anonymous"></script>
+<script src="{%  static  'js/bootstrap.bundle.js'  %}" type="text/javascript"></script>
+<script src="{%  static  'js/popper.min.js'  %}" type="text/javascript"></script>
+<script src="{%  static  'js/fontawesome.kit.js'  %}" type="text/javascript" crossorigin="anonymous"></script>
+<script src="{%  static  'js/jquery-confirm.min.js'  %}" type="text/javascript" crossorigin="anonymous"></script>
+<script src="{%  static  'js/main.js'  %}" type="text/javascript" crossorigin="anonymous"></script>
+<script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
+{% if user.is_authenticated %}
+{% register_notify_callbacks callbacks='fill_notification_badge,get_unread_notifications' %}
+{% endif %}
+{% block scripts %}
+{% endblock %}
+</body>
+
+</html>
