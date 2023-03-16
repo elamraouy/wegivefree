@@ -1,4 +1,4 @@
-asgiref==3.6.0
+asgiref
 certifi==2020.6.20
 cffi==1.15.1
 chardet==3.0.4
@@ -7,11 +7,11 @@ cloudinary==1.32.0
 cryptography==39.0.2
 defusedxml==0.7.1
 Django==4.1.7
-django-allauth==0.43.0
-django-cors-headers==3.14.0
+django-allauth
+django-cors-headers
 django-cors-middleware==1.5.0
 django-environ==0.4.5
-django-psycopg2-extension==0.1.1
+django-psycopg2-extension
 django-rest-auth==0.9.5
 django-stubs==1.15.0
 django-stubs-ext==0.7.0
